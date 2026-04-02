@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "title": "Magnetic Button Shirts",
+    "category": "Clothing",
+    "needType": "Dexterity",
+    "lifeArea": "Dressing",
+    "summary": "Shirts that look like standard button-downs but use hidden magnets for closure. Ideal for people with limited hand strength, arthritis, or one-handed dressing needs.",
+    "keywords": ["magnets", "buttons", "one hand", "arthritis", "dexterity", "dressing"],
+    "tags": ["Adaptive Apparel", "One-Handed Use"],
+    "links": [{"label": "How they work", "url": "https://example.com"}]
+  },
+  {
+    "id": "2",
+    "title": "Smart Walking Canes",
+    "category": "Mobility",
+    "needType": "Vision",
+    "lifeArea": "Navigation",
+    "summary": "Canes with ultrasonic sensors that detect chest-height obstacles and integrate with GPS for turn-by-turn voice navigation.",
+    "keywords": ["blind", "low vision", "navigation", "obstacles", "cane", "smart tech"],
+    "tags": ["Blindness", "Tech"],
+    "links": []
+  },
+  {
+    "id": "3",
+    "title": "Adaptive Utensil Set",
+    "category": "Daily Living",
+    "needType": "Dexterity",
+    "lifeArea": "Eating",
+    "summary": "Weighted or thick-handled utensils designed to stabilize hand tremors and provide a better grip for those with motor challenges.",
+    "keywords": ["eating", "tremors", "parkinsons", "grip", "utensils", "spoon", "fork"],
+    "tags": ["Kitchen Tools", "Tremor Support"],
+    "links": []
+  },
+  {
+    "id": "4",
+    "title": "Long-Handled Shoe Horn",
+    "category": "Clothing",
+    "needType": "Mobility",
+    "lifeArea": "Dressing",
+    "summary": "Extended shoe horns that allow putting on shoes without bending over, helpful for back pain, limited mobility, or post-surgery recovery.",
+    "keywords": ["shoes", "bending", "back pain", "dressing", "mobility"],
+    "tags": ["Mobility Aid"],
+    "links": []
+  },
+  {
+    "id": "5",
+    "title": "Voice-to-Text AAC Apps",
+    "category": "Communication",
+    "needType": "Speech",
+    "lifeArea": "Social",
+    "summary": "Apps that convert typed text into natural-sounding speech or use symbols for communication. Essential for nonverbal individuals or those with speech impairments.",
+    "keywords": ["nonverbal", "speech", "communication", "AAC", "talk", "symbols"],
+    "tags": ["Communication", "App"],
+    "links": []
+  }
+]
