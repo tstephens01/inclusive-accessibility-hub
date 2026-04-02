@@ -32,6 +32,39 @@
     "tags": ["Kitchen Tools", "Tremor Support"],
     "links": []
   },
+    {
+    "id": "bulk-1",
+    "title": "Kizik Hands-Free Shoes",
+    "category": "Clothing",
+    "needType": "Mobility",
+    "lifeArea": "Dressing",
+    "summary": "Shoes with a patented heel that collapses and pops back up, allowing you to step in without using your hands or bending over.",
+    "keywords": ["shoes", "bending", "one hand", "hands free", "footwear"],
+    "tags": ["Universal Design", "Independence"],
+    "links": [{"label": "Shop Kizik", "url": "https://kizik.com"}]
+  },
+  {
+    "id": "bulk-2",
+    "title": "Braille Refreshable Displays",
+    "category": "Communication",
+    "needType": "Vision",
+    "lifeArea": "Work/School",
+    "summary": "Electronic devices that connect to computers/phones and raise pins to create Braille characters in real-time.",
+    "keywords": ["blind", "braille", "reading", "computer", "display"],
+    "tags": ["Blindness", "Tech"],
+    "links": [{"label": "NLS Guide", "url": "https://www.loc.gov/nls"}]
+  },
+  {
+    "id": "bulk-3",
+    "title": "Bidet Toilet Attachment",
+    "category": "Daily Living",
+    "needType": "Dexterity",
+    "lifeArea": "Hygiene",
+    "summary": "An easy-to-install bidet that helps with cleaning after toileting, significantly increasing independence for those with limited reach.",
+    "keywords": ["bathroom", "toilet", "hygiene", "wiping", "independence"],
+    "tags": ["Bathroom Access", "Personal Care"],
+    "links": []
+  }
   {
     "id": "4",
     "title": "Long-Handled Shoe Horn",
