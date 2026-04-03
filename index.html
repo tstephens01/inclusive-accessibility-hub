@@ -14,6 +14,7 @@
       --text: #333;
       --shadow: 0 4px 12px rgba(0,0,0,0.08);
       --accent: #ff6b6b;
+      --data-color: #27ae60;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
@@ -29,6 +30,9 @@
     .filter-btn { padding: 0.6rem 1.4rem; border: 2px solid var(--primary); background: #fff; color: var(--primary); border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
     .filter-btn.active, .filter-btn:hover { background: var(--primary); color: #fff; transform: scale(1.05); }
     
+    .section-title { text-align: center; margin: 4rem 0 2rem; color: var(--secondary); font-size: 2rem; position: relative; }
+    .section-title::after { content: ''; display: block; width: 50px; height: 4px; background: var(--primary); margin: 10px auto; border-radius: 2px; }
+
     #results { max-width: 900px; margin: 0 auto 5rem; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
     .card { background: var(--card-bg); border-radius: 20px; padding: 1.8rem; box-shadow: var(--shadow); border-top: 5px solid var(--primary); display: flex; flex-direction: column; animation: fadeIn 0.4s ease-out; transition: transform 0.2s; }
     .card:hover { transform: translateY(-5px); }
@@ -38,35 +42,82 @@
     .card h3 { color: var(--secondary); margin-bottom: 0.8rem; font-size: 1.25rem; line-height: 1.3; }
     .card p { font-size: 0.95rem; color: #555; flex-grow: 1; }
     
-    .contribute-box { max-width: 900px; margin: 4rem auto; padding: 2.5rem; background: #fff; border-radius: 24px; text-align: center; box-shadow: var(--shadow); }
-    .contribute-box h2 { margin-bottom: 1rem; color: var(--secondary); }
-    .btn-suggest { display: inline-block; padding: 1rem 2.5rem; background: var(--accent); color: #fff; text-decoration: none; border-radius: 15px; font-weight: 700; font-size: 1.1rem; margin-top: 1rem; transition: all 0.2s; }
-    .btn-suggest:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    .data-grid { max-width: 900px; margin: 0 auto 5rem; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .data-card { background: #fff; border-radius: 20px; padding: 1.8rem; border-left: 6px solid var(--data-color); box-shadow: var(--shadow); transition: all 0.2s; }
+    .data-card:hover { border-left-width: 10px; background: #f9fdfa; }
+    .data-card h3 { color: var(--secondary); margin-bottom: 0.5rem; }
+    .data-card .source { font-size: 0.8rem; color: var(--data-color); font-weight: bold; text-transform: uppercase; margin-bottom: 1rem; display: block; }
+    .data-card p { font-size: 0.9rem; color: #666; margin-bottom: 1.5rem; }
+    .btn-data { display: inline-block; padding: 0.6rem 1.2rem; background: var(--data-color); color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 0.85rem; }
 
-    footer { text-align: center; padding: 4rem 1rem; background: var(--secondary); color: #rgba(255,255,255,0.6); font-size: 0.95rem; }
-    footer p { color: #fff; opacity: 0.7; }
+    .contribute-box { max-width: 900px; margin: 4rem auto; padding: 2.5rem; background: #fff; border-radius: 24px; text-align: center; box-shadow: var(--shadow); }
+    .btn-suggest { display: inline-block; padding: 1rem 2.5rem; background: var(--accent); color: #fff; text-decoration: none; border-radius: 15px; font-weight: 700; font-size: 1.1rem; margin-top: 1rem; transition: all 0.2s; }
+
+    footer { text-align: center; padding: 4rem 1rem; background: var(--secondary); color: #fff; font-size: 0.95rem; }
+    footer p { opacity: 0.7; }
     .no-results { text-align: center; padding: 4rem; color: #888; grid-column: 1 / -1; font-size: 1.2rem; }
   </style>
 </head>
 <body>
   <header>
     <h1>Inclusive Accessibility Hub</h1>
-    <p>A comprehensive living library of adaptive equipment, life-hacks, and tools designed to empower people with disabilities and their caregivers.</p>
+    <p>Connecting the global disability community to tools, tips, and open research data.</p>
   </header>
 
   <div class="search-section">
-    <input type="text" id="searchInput" placeholder="Search by condition, task, or need (e.g. 'one hand', 'shower', 'low vision')..." aria-label="Search resources">
+    <input type="text" id="searchInput" placeholder="Search resources or data sets (e.g. 'one hand', 'census', 'hearing data')..." aria-label="Search resources">
   </div>
 
   <div class="filters" id="filterBar">
     <button class="filter-btn active" data-category="All">All Resources</button>
   </div>
 
+  <h2 class="section-title">Community Resources</h2>
   <main id="results"></main>
+
+  <h2 class="section-title">Open Data & Research</h2>
+  <section class="data-grid">
+    <div class="data-card">
+      <span class="source">IncluSet Repository</span>
+      <h3>Accessibility Datasets</h3>
+      <p>A massive collection of 139+ accessibility datasets surfaced for researchers and developers to build better inclusive tech.</p>
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8375514/" class="btn-data" target="_blank">Explore Datasets</a>
+    </div>
+    <div class="data-card">
+      <span class="source">World Bank</span>
+      <h3>Global Disability Data Hub</h3>
+      <p>Disaggregated development data to promote access and monitor the inclusion of people with disabilities worldwide.</p>
+      <a href="https://disabilitydata.worldbank.org/en/home" class="btn-data" target="_blank">View Global Stats</a>
+    </div>
+    <div class="data-card">
+      <span class="source">WHO</span>
+      <h3>Assistive Tech Portal</h3>
+      <p>Population-based data on self-reported use, need, and barriers to accessing assistive technology globally.</p>
+      <a href="https://www.who.int/data/gho/data/themes/assistivetech" class="btn-data" target="_blank">Access Portal</a>
+    </div>
+    <div class="data-card">
+      <span class="source">CDC (DHDS)</span>
+      <h3>US Disability Health Data</h3>
+      <p>Dynamic data system providing state-level statistics on health, lifestyle, and barriers for people with disabilities in the US.</p>
+      <a href="https://www.cdc.gov/dhds/datasets/index.html" class="btn-data" target="_blank">Browse US Data</a>
+    </div>
+    <div class="data-card">
+      <span class="source">Project Sidewalk</span>
+      <h3>Urban Accessibility Map</h3>
+      <p>Open mapping data indicating the 'Access Score' of streets and sidewalks based on curb ramps, surface quality, and more.</p>
+      <a href="https://create.uw.edu/open-source-tools-for-accessibility-coders/" class="btn-data" target="_blank">Get Sidewalk Data</a>
+    </div>
+    <div class="data-card">
+      <span class="source">Harvard Dataverse</span>
+      <h3>Disability Research Archive</h3>
+      <p>A free, open-source repository containing academic research data and studies related to accessibility and inclusion.</p>
+      <a href="https://subjectguides.lib.neu.edu/disability/data" class="btn-data" target="_blank">Search Research</a>
+    </div>
+  </section>
 
   <div class="contribute-box">
     <h2>Help us Grow</h2>
-    <p>Know a great tool or tip we missed? Our goal is to be the most comprehensive resource on the web.</p>
+    <p>Know a dataset or open resource we missed? Our goal is to be the ultimate hub for accessibility knowledge.</p>
     <a href="https://github.com/tstephens01/inclusive-accessibility-hub/issues" class="btn-suggest">Suggest a Resource</a>
   </div>
 
@@ -75,8 +126,8 @@
   </footer>
 
   <script>
+    // Initial dataset (40 items)
     const data = [
-      // Original 20 items (summarized for efficiency)
       { id: 1, title: "Magnetic Button Shirts", category: "Clothing", summary: "Shirts with hidden magnets instead of buttons. Perfect for limited dexterity or one-handed dressing.", keywords: "dexterity arthritis one hand stroke" },
       { id: 2, title: "Weighted Utensils", category: "Eating", summary: "Heavier forks and spoons that stabilize hand tremors, making eating more manageable and dignified.", keywords: "parkinsons tremors shaky hands eating" },
       { id: 3, title: "Voice-to-Text Software", category: "Tech", summary: "Advanced software allowing full computer control and typing through voice commands.", keywords: "typing mobility software computer dictation" },
@@ -97,8 +148,6 @@
       { id: 18, title: "Noise Cancelling Headphones", category: "Cognitive", summary: "Reduces sensory overload by blocking out background noise in loud environments.", keywords: "autism sensory processing cognitive focus" },
       { id: 19, title: "Universal Cuff Utensil Holder", category: "Eating", summary: "A strap that holds various tools (pens, toothbrushes, forks) for users with no grip.", keywords: "paralysis quadriplegia eating writing" },
       { id: 20, title: "Bed Rail Assist Bar", category: "Mobility", summary: "Sturdy handle that provides support when getting in and out of bed or repositioning.", keywords: "bed safety mobility elderly injury" },
-      
-      // NEW EXPANDED ITEMS
       { id: 21, title: "Threshold Ramps", category: "Home", summary: "Small, durable ramps that eliminate tripping hazards at doorways for wheelchairs and walkers.", keywords: "ramp entrance doorway wheelchair walker home modification" },
       { id: 22, title: "Anti-Scald Water Valve", category: "Home", summary: "Device that automatically shuts off or regulates water temperature to prevent burns in showers/sinks.", keywords: "shower bath safety burns safety home" },
       { id: 23, title: "Side-Opening Crib (PediaLift)", category: "Parenting", summary: "Specialized cribs with doors that open to the side, allowing wheelchair users to safely reach their baby.", keywords: "baby parenting wheelchair crib nursery" },
