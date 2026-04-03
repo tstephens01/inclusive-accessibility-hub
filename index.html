@@ -305,7 +305,8 @@ let activeCategory="All";
 
 categories.forEach(cat=>{if(cat==="All")return;const btn=document.createElement('button');btn.className='filter-btn';btn.textContent=cat;btn.dataset.category=cat;filterBar.appendChild(btn)});
 
-function render(items){resultsContainer.innerHTML='';if(items.length===0){resultsContainer.innerHTML='<div class="no-results">No resources found matching your search. Try broader keywords!</div>';return;}items.forEach(item=>{const card=document.createElement('div');card.className='card';card.innerHTML=`<span class="tag">${item.category}</span><h3>${item.title}</h3><p>${item.summary}</p>${item.link?`<a href="${item.link}" class="card-link" target="_blank" rel="noopener">Learn More →</a>`:''}`;}resultsContainer.appendChild(card)});document.getElementById('totalCount').textContent=`${data.length}`}
+308
+    (items){resultsContainer.innerHTML='';if(items.length===0){resultsContainer.innerHTML='<div class="no-results">No resources found matching your search. Try broader keywords!</div>';return;}items.forEach(item=>{const card=document.createElement('div');card.className='card';card.innerHTML=`<span class="tag">${item.category}</span><h3>${item.title}</h3><p>${item.summary}</p>${item.link?`<a href="${item.link}" class="card-link" target="_blank" rel="noopener">Learn More →</a>`:''}`;}resultsContainer.appendChild(card)});document.getElementById('totalCount').textContent=`${data.length}`}
 
 function update(){const query=searchInput.value.trim();let filtered=data;if(query){const results=idx.search(query);const resultIds=results.map(r=>parseInt(r.ref));filtered=data.filter(d=>resultIds.includes(d.id))}if(activeCategory!=="All"){filtered=filtered.filter(d=>d.category===activeCategory)}render(filtered)}
 
