@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="The most comprehensive accessibility resource hub connecting the global disability community to adaptive equipment, assistive technology, tips, tricks, and open research data.">
+    <title>Inclusive Accessibility Hub - Complete Resource Directory</title>
+    <script src="https://unpkg.com/lunr/lunr.js"></script>
+    <style>
+        :root {
+            --primary: #2d6fc4;
+            --secondary: #1a1a2e;
+            --bg: #f0f4f8;
+            --card-bg: #ffffff;
+            --text: #333;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --accent: #ff6b6b;
+            --data-color: #27ae60;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 4rem 1rem; text-align: center; }
+        header h1 { font-size: 2.8rem; margin-bottom: 0.8rem; letter-spacing: -0.5px; }
+        header p { opacity: 0.9; font-size: 1.2rem; max-width: 700px; margin: 0 auto; }
+        
+        .search-section { max-width: 900px; margin: -2.5rem auto 3rem; padding: 0 1rem; position: relative; z-index: 10; }
+        #searchInput { width: 100%; padding: 1.4rem 1.8rem; font-size: 1.3rem; border: none; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.12); outline: none; transition: all 0.3s ease; }
+        #searchInput:focus { transform: translateY(-3px); box-shadow: 0 20px 45px rgba(0,0,0,0.15); }
+        
+        .stats-bar { max-width: 900px; margin: 0 auto 2rem; padding: 1.5rem; background: #fff; border-radius: 15px; box-shadow: var(--shadow); display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; }
+        .stat { text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: 800; color: var(--primary); display: block; }
+        .stat-label { font-size: 0.85rem; color: #666; text-transform: uppercase; }
+        
+        .filters { max-width: 900px; margin: 0 auto 2.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; padding: 0 1rem; }
+        .filter-btn { padding: 0.6rem 1.4rem; border: 2px solid var(--primary); background: #fff; color: var(--primary); border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
+        .filter-btn.active, .filter-btn:hover { background: var(--primary); color: #fff; transform: scale(1.05); }
+        
+        .section-title { text-align: center; margin: 4rem 0 2rem; color: var(--secondary); font-size: 2rem; position: relative; }
+        .section-title::after { content: ''; display: block; width: 50px; height: 4px; background: var(--primary); margin: 10px auto; border-radius: 2px; }
+        #results { max-width: 900px; margin: 0 auto 5rem; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 1.8rem; box-shadow: var(--shadow); border-top: 5px solid var(--primary); display: flex; flex-direction: column; animation: fadeIn 0.4s ease-out; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .tag { display: inline-block; background: #e8f0fe; color: var(--primary); padding: 0.3rem 1rem; border-radius: 12px; font-size: 0.75rem; font-weight: 800; margin-bottom: 1rem; text-transform: uppercase; align-self: flex-start; }
+        .card h3 { color: var(--secondary); margin-bottom: 0.8rem; font-size: 1.25rem; line-height: 1.3; }
+        .card p { font-size: 0.95rem; color: #555; flex-grow: 1; margin-bottom: 1rem; }
+        .card-link { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .card-link:hover { text-decoration: underline; }
+        
+        .data-grid { max-width: 900px; margin: 0 auto 5rem; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .data-card { background: #fff; border-radius: 20px; padding: 1.8rem; border-left: 6px solid var(--data-color); box-shadow: var(--shadow); transition: all 0.2s; }
+        .data-card:hover { border-left-width: 10px; background: #f9fdfa; }
+        .data-card h3 { color: var(--secondary); margin-bottom: 0.5rem; }
+        .data-card .source { font-size: 0.8rem; color: var(--data-color); font-weight: bold; text-transform: uppercase; margin-bottom: 1rem; display: block; }
+        .data-card p { font-size: 0.9rem; color: #666; margin-bottom: 1.5rem; }
+        .btn-data { display: inline-block; padding: 0.6rem 1.2rem; background: var(--data-color); color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 0.85rem; }
+        .contribute-box { max-width: 900px; margin: 4rem auto; padding: 2.5rem; background: #fff; border-radius: 24px; text-align: center; box-shadow: var(--shadow); }
+        .btn-suggest { display: inline-block; padding: 1rem 2.5rem; background: var(--accent); color: #fff; text-decoration: none; border-radius: 15px; font-weight: 700; font-size: 1.1rem; margin-top: 1rem; transition: all 0.2s; }
+        footer { text-align: center; padding: 4rem 1rem; background: var(--secondary); color: #fff; font-size: 0.95rem; }
+        footer p { opacity: 0.7; }
+        .no-results { text-align: center; padding: 4rem; color: #888; grid-column: 1 / -1; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Inclusive Accessibility Hub</h1>
+        <p>The most comprehensive resource connecting the global disability community to adaptive equipment, assistive technology, open data, and life-changing solutions you didn't even know existed.</p>
+    </header>
+    
+    <div class="search-section">
+        <input type="text" id="searchInput" placeholder="Search 150+ resources (e.g. 'one hand', 'blind cooking', 'autism travel')..." aria-label="Search resources">
+    </div>
+    
+    <div class="stats-bar">
+        <div class="stat"><span class="stat-number" id="totalCount">150+</span><span class="stat-label">Resources</span></div>
+        <div class="stat"><span class="stat-number">20+</span><span class="stat-label">Categories</span></div>
+        <div class="stat"><span class="stat-number">∞</span><span class="stat-label">Possibilities</span></div>
+    </div>
+    
+    <div class="filters" id="filterBar">
+        <button class="filter-btn active" data-category="All">All Resources</button>
+    </div>
+    
+    <h2 class="section-title">Community Resources</h2>
+    <main id="results"></main>
+    
+    <h2 class="section-title">Open Data & Research</h2>
+    <section class="data-grid">
+        <div class="data-card">
+            <span class="source">IncluSet Repository</span>
+            <h3>Accessibility Datasets</h3>
+            <p>A massive collection of 139+ accessibility datasets surfaced for researchers and developers to build better inclusive tech.</p>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8375514/" class="btn-data" target="_blank">Explore Datasets</a>
+        </div>
+        <div class="data-card">
+            <span class="source">World Bank</span>
+            <h3>Global Disability Data Hub</h3>
+            <p>Disaggregated development data to promote access and monitor the inclusion of people with disabilities worldwide.</p>
+            <a href="https://disabilitydata.worldbank.org/" class="btn-data" target="_blank">View Global Stats</a>
+        </div>
+        <div class="data-card">
+            <span class="source">WHO</span>
+            <h3>Assistive Tech Portal</h3>
+            <p>Population-based data on self-reported use, need, and barriers to accessing assistive technology globally.</p>
+            <a href="https://www.who.int/data/gho/data/themes/assistivetech" class="btn-data" target="_blank">Access Portal</a>
+        </div>
+        <div class="data-card">
+            <span class="source">CDC (DHDS)</span>
+            <h3>US Disability Health Data</h3>
+            <p>Dynamic data system providing state-level statistics on health, lifestyle, and barriers for people with disabilities in the US.</p>
+            <a href="https://www.cdc.gov/ncbddd/disabilityandhealth/dhds/index.html" class="btn-data" target="_blank">Browse US Data</a>
+        </div>
+        <div class="data-card">
+            <span class="source">Project Sidewalk</span>
+            <h3>Urban Accessibility Map</h3>
+            <p>Open mapping data indicating the 'Access Score' of streets and sidewalks based on curb ramps, surface quality, and more.</p>
+            <a href="https://sidewalk.umd.edu/" class="btn-data" target="_blank">Get Sidewalk Data</a>
+        </div>
+        <div class="data-card">
+            <span class="source">AT3 Center</span>
+            <h3>Unified Listing Database</h3>
+            <p>Central database storing information about assistive technology solutions and access features in mainstream products.</p>
+            <a href="https://at3center.net/find-at/" class="btn-data" target="_blank">Search AT Database</a>
+        </div>
+    </section>
+    
+    <div class="contribute-box">
+        <h2>Help Us Grow This Hub</h2>
+        <p>Know a dataset, product, tip, or resource we missed? Our mission is to be the ultimate comprehensive hub for accessibility knowledge that serves everyone.</p>
+        <a href="https://github.com/tstephens01/inclusive-accessibility-hub/issues" class="btn-suggest">Suggest a Resource</a>
+    </div>
+    
+    <footer>
+        <p>Inclusive Accessibility Hub © 2026 - Built with empathy for independence.</p>
+    </footer>
+    
+    <script>
+const data = [
+  {id:1,title:"Magnetic Button Shirts",category:"Clothing",summary:"Shirts with hidden magnets instead of buttons. Perfect for limited dexterity or one-handed dressing.",keywords:"dexterity arthritis one hand stroke parkinson clothing",link:"https://www.magnaready.com/"},
+  {id:2,title:"Weighted Utensils",category:"Eating",summary:"Heavier forks and spoons that stabilize hand tremors, making eating more manageable and dignified.",keywords:"parkinsons tremors shaky hands eating dining",link:"https://www.performancehealth.com/weighted-utensils"},
+  {id:3,title:"Voice-to-Text Software",category:"Tech",summary:"Advanced software like Dragon allowing full computer control and typing through voice commands.",keywords:"typing mobility software computer dictation speech",link:"https://www.nuance.com/dragon.html"},
+  {id:4,title:"Long-Handled Grabber",category:"Mobility",summary:"Reaching tool for picking up items from the floor or high shelves without bending or stretching.",keywords:"reach bending pickup independent living reacher",link:"https://www.amazon.com/s?k=reacher+grabber"},
+  {id:5,title:"Screen Readers (NVDA/JAWS)",category:"Vision",summary:"Software that reads aloud on-screen text for users who are blind or have low vision.",keywords:"blind vision computer accessibility software reading",link:"https://www.nvaccess.org/"},
+  {id:6,title:"Adaptive Cutlery with Straps",category:"Eating",summary:"Utensils with adjustable straps that secure to the hand, helping those with weak grip.",keywords:"grip weakness paralysis eating help utensils",link:"https://www.performancehealth.com/adaptive-utensils"},
+  {id:7,title:"Sock Aid Tool",category:"Clothing",summary:"Simple device that helps pull on socks without needing to reach down to the feet.",keywords:"bending socks dressing mobility back pain",link:"https://www.amazon.com/s?k=sock+aid"},
+  {id:8,title:"Visual Doorbell Alert",category:"Hearing",summary:"Flashing light system that signals when someone is at the door or if a phone is ringing.",keywords:"deaf hearing doorbell alert signal notification",link:"https://www.harriscomm.com/doorbell-signalers.html"},
+  {id:9,title:"Smart Pill Organizer",category:"Personal Care",summary:"Electronic pill box that flashes and alarms when it is time to take specific medications.",keywords:"meds memory cognitive reminders health medication",link:"https://www.herohealth.com/"},
+  {id:10,title:"Ergonomic Vertical Mouse",category:"Tech",summary:"Mouse designed to keep the wrist in a neutral position, reducing strain and pain.",keywords:"carpal tunnel wrist pain computer office ergonomic",link:"https://evoluent.com/"},
+  {id:11,title:"Wheelchair Lap Tray",category:"Mobility",summary:"Stable surface that attaches to wheelchairs for eating, working, or using a tablet.",keywords:"wheelchair desk eating support table",link:"https://www.sportaid.com/wheelchair-lap-trays.html"},
+  {id:12,title:"Braille Labeler",category:"Vision",summary:"Handheld device for creating embossed braille labels for household items, files, and more.",keywords:"blind organization vision household labeling",link:"https://www.maxiaids.com/braille-labelers"},
+  {id:13,title:"Text-to-Speech Scanning Pen",category:"Cognitive",summary:"Portable pen that scans printed text and reads it aloud instantly. Great for dyslexia.",keywords:"reading dyslexia learning cognitive school education",link:"https://www.livescribe.com/"},
+  {id:14,title:"Adjustable Shower Chair",category:"Personal Care",summary:"Stable, non-slip seat for the shower to prevent falls and reduce fatigue while bathing.",keywords:"shower bath safety fall prevention fatigue bathroom",link:"https://www.amazon.com/s?k=shower+chair"},
+  {id:15,title:"Elastic No-Tie Laces",category:"Clothing",summary:"Turn any lace-up shoe into a slip-on. Ideal for those who cannot tie traditional bows.",keywords:"shoes one hand arthritis kids elderly laces",link:"https://www.amazon.com/s?k=elastic+shoe+laces"},
+  {id:16,title:"Adaptive Gaming Controller",category:"Tech",summary:"Customizable controllers like the Xbox Adaptive Controller designed for limited mobility.",keywords:"gaming xbox playstation mobility motor skills recreation",link:"https://www.xbox.com/en-US/accessories/controllers/xbox-adaptive-controller"},
+  {id:17,title:"Large Print Calendar",category:"Vision",summary:"High-contrast, large-font calendars for easier reading and schedule management.",keywords:"vision low vision organization planning calendar",link:"https://www.maxiaids.com/large-print-calendars"},
+  {id:18,title:"Noise Cancelling Headphones",category:"Cognitive",summary:"Reduces sensory overload by blocking out background noise in loud environments.",keywords:"autism sensory processing cognitive focus concentration",link:"https://www.bose.com/headphones"},
+  {id:19,title:"Universal Cuff Utensil Holder",category:"Eating",summary:"A strap that holds various tools (pens, toothbrushes, forks) for users with no grip.",keywords:"paralysis quadriplegia eating writing grip",link:"https://www.performancehealth.com/universal-cuff"},
+  {id:20,title:"Bed Rail Assist Bar",category:"Mobility",summary:"Sturdy handle that provides support when getting in and out of bed or repositioning.",keywords:"bed safety mobility elderly injury support",link:"https://www.amazon.com/s?k=bed+rail"},
+  {id:21,title:"Threshold Ramps",category:"Home",summary:"Small, durable ramps that eliminate tripping hazards at doorways for wheelchairs and walkers.",keywords:"ramp entrance doorway wheelchair walker home modification",link:"https://www.amazon.com/s?k=threshold+ramp"},
+  {id:22,title:"Anti-Scald Water Valve",category:"Home",summary:"Device that automatically shuts off or regulates water temperature to prevent burns in showers/sinks.",keywords:"shower bath safety burns home plumbing",link:"https://www.homedepot.com/b/anti-scald-valve"},
+  {id:23,title:"Side-Opening Crib (PediaLift)",category:"Parenting",summary:"Specialized cribs with doors that open to the side, allowing wheelchair users to safely reach their baby.",keywords:"baby parenting wheelchair crib nursery infant",link:"https://www.byacre.com/us/pedialift"},
+  {id:24,title:"Live Transcribe App",category:"Hearing",summary:"Google app that provides real-time, high-accuracy speech-to-text captions on your phone.",keywords:"deaf hearing captions speech to text phone app",link:"https://www.android.com/accessibility/live-transcribe/"},
+  {id:25,title:"National Parks Access Pass",category:"Travel",summary:"Free lifetime pass to all US National Parks for citizens with permanent disabilities.",keywords:"travel nature parks discount recreation outdoors",link:"https://www.nps.gov/subjects/accessibilityguide/access-pass.htm"},
+  {id:26,title:"Automatic Jar Opener",category:"Home",summary:"Battery-operated device that twists off stubborn lids at the touch of a button.",keywords:"kitchen grip arthritis hands cooking jar",link:"https://www.amazon.com/s?k=automatic+jar+opener"},
+  {id:27,title:"One-Handed Keyboard",category:"Workplace",summary:"Keyboards with optimized layouts for full speed typing using only the left or right hand.",keywords:"typing stroke one hand office computer work",link:"https://www.maltron.com/"},
+  {id:28,title:"Tiimo (Visual Schedule App)",category:"Cognitive",summary:"App that uses visual icons and timers to help users with ADHD or Autism manage their daily routines.",keywords:"adhd autism routine memory focus cognitive app",link:"https://www.tiimoapp.com/"},
+  {id:29,title:"Adaptive Scuba (Diveheart)",category:"Recreation",summary:"Programs and equipment that make scuba diving accessible to people with physical and cognitive disabilities.",keywords:"sports hobby diving water paralysis blind recreation",link:"https://www.diveheart.org/"},
+  {id:30,title:"Sensory-Friendly Cinema",category:"Recreation",summary:"Movie screenings with lights up, sound down, and a 'talk and move' policy for sensory needs.",keywords:"autism sensory movies kids entertainment cinema",link:"https://www.amctheatres.com/programs/sensory-friendly-films"},
+  {id:31,title:"Lever Car Door Opener",category:"Travel",summary:"Portable handle that hooks into car door latches to provide extra leverage for getting in and out.",keywords:"car vehicle mobility elderly strength transfer",link:"https://www.amazon.com/s?k=car+door+handle+aid"},
+  {id:32,title:"AAC Communication Apps",category:"Cognitive",summary:"Apps like Proloquo2Go that use symbols and text-to-speech to help non-verbal users communicate.",keywords:"speech non-verbal communication autism stroke aac",link:"https://www.assistiveware.com/products/proloquo2go"},
+  {id:33,title:"Pull-Down Shelf Inserts",category:"Home",summary:"Kitchen cabinet inserts that pull down to counter height, perfect for wheelchair users.",keywords:"kitchen reach wheelchair home modification cabinet",link:"https://www.rev-a-shelf.com/pull-down-shelving"},
+  {id:34,title:"Accessible Route Navigation",category:"Travel",summary:"Google Maps feature that specifically highlights 'wheelchair accessible' public transit routes and paths.",keywords:"navigation travel city wheelchair walking transit",link:"https://www.google.com/maps"},
+  {id:35,title:"Amtrak Disability Discount",category:"Travel",summary:"10% fare discount and dedicated assistance for passengers with permanent disabilities.",keywords:"train travel discount assistance help transportation",link:"https://www.amtrak.com/services-amenities/accessibility.html"},
+  {id:36,title:"Wheelchair Tablet Mount",category:"Workplace",summary:"Flexible, sturdy arms that securely hold tablets or phones on a wheelchair frame.",keywords:"tech wheelchair phone mount office tablet",link:"https://www.amazon.com/s?k=wheelchair+tablet+mount"},
+  {id:37,title:"Long-Handled Bath Sponge",category:"Personal Care",summary:"Curved sponge handle that allows for washing back and feet without excessive bending.",keywords:"shower hygiene reaching mobility bathing",link:"https://www.amazon.com/s?k=long+handled+bath+sponge"},
+  {id:38,title:"Smart Induction Cooktop",category:"Home",summary:"Cooktops that stay cool to the touch and offer automatic shut-off for enhanced kitchen safety.",keywords:"cooking fire safety home blind dexterity kitchen",link:"https://www.bestbuy.com/induction-cooktops"},
+  {id:39,title:"Firm Nursing Pillow",category:"Parenting",summary:"Supportive pillows like 'My Brest Friend' that secure around the waist to assist with infant feeding.",keywords:"baby parenting support mobility nursing breastfeeding",link:"https://www.mybrestfriend.com/"},
+  {id:40,title:"Roll-Under Desk",category:"Workplace",summary:"Height-adjustable or open-frame desks designed specifically for wheelchair clearance.",keywords:"office wheelchair desk work furniture workspace",link:"https://www.upliftdesk.com/"},
+  {id:41,title:"Button Hook Tool",category:"Clothing",summary:"Hook that slips through buttonholes and pulls buttons through, making dressing easier with one hand.",keywords:"buttons one hand dressing clothing arthritis",link:"https://www.amazon.com/s?k=button+hook"},
+  {id:42,title:"Zipper Pull Rings",category:"Clothing",summary:"Large rings attached to zipper pulls for easier grasping and pulling with limited dexterity.",keywords:"zipper dexterity arthritis dressing clothing fine motor",link:"https://www.amazon.com/s?k=zipper+pull+rings"},
+  {id:43,title:"Plate Guards",category:"Eating",summary:"Clip-on barriers for plates that help scoop food, preventing spills for one-handed eating.",keywords:"one hand eating spills plate dining",link:"https://www.performancehealth.com/plate-guards"},
+  {id:44,title:"Non-Slip Placemats",category:"Eating",summary:"Textured mats that keep plates, bowls, and cups from sliding during meals.",keywords:"eating stability tremors parkinson dining table",link:"https://www.amazon.com/s?k=non+slip+placemat"},
+  {id:45,title:"Rocker Knife",category:"Eating",summary:"Curved blade knife that cuts food with a rocking motion, perfect for one-handed use.",keywords:"one hand cutting eating dining knife",link:"https://www.amazon.com/s?k=rocker+knife"},
+  {id:46,title:"Cup with Two Handles",category:"Eating",summary:"Mugs with large easy-grip handles on both sides for stability and easier drinking.",keywords:"tremors grip drinking arthritis parkinson",link:"https://www.amazon.com/s?k=two+handle+cup"},
+  {id:47,title:"Straw Cups with Lids",category:"Eating",summary:"Spill-proof cups with built-in straws, reducing the need to tilt head back while drinking.",keywords:"drinking swallowing neck mobility hydration",link:"https://www.amazon.com/s?k=adult+straw+cup"},
+  {id:48,title:"Voice Assistant Devices",category:"Tech",summary:"Smart speakers like Alexa or Google Home for hands-free control of lights, music, reminders, and more.",keywords:"alexa google voice control smart home automation",link:"https://www.amazon.com/smart-speakers"},
+  {id:49,title:"Eye Gaze Technology",category:"Tech",summary:"Computer control systems that track eye movement, allowing communication and computing without hands.",keywords:"paralysis als quadriplegia computer communication",link:"https://www.tobiidynavox.com/"},
+  {id:50,title:"Switch-Adapted Toys",category:"Recreation",summary:"Toys modified to be operated by large accessible switches for children with limited motor control.",keywords:"kids toys switches cerebral palsy play",link:"https://www.ablenetinc.com/switch-adapted-toys"},
+  {id:51,title:"Braille Note-Taking Devices",category:"Vision",summary:"Portable devices for typing, reading, and storing notes in braille.",keywords:"blind braille typing notes school",link:"https://www.humanware.com/"},
+  {id:52,title:"White Cane",category:"Vision",summary:"Standard mobility tool for people who are blind or have low vision to detect obstacles.",keywords:"blind mobility walking navigation orientation",link:"https://www.nfb.org/programs-services/nfb-jernigan-institute/white-cane"},
+  {id:53,title:"Tactile Markers",category:"Vision",summary:"Bump dots and textured labels to mark appliances, remotes, and household items.",keywords:"blind low vision organization household tactile",link:"https://www.maxiaids.com/tactile-markers"},
+  {id:54,title:"Magnifying Glass (Handheld)",category:"Vision",summary:"Portable magnifiers for reading labels, menus, and small print on the go.",keywords:"low vision reading magnification portable",link:"https://www.amazon.com/s?k=handheld+magnifying+glass"},
+  {id:55,title:"Talking Watches",category:"Vision",summary:"Watches that announce the time aloud at the press of a button.",keywords:"blind time watch voice audio",link:"https://www.maxiaids.com/talking-watches"},
+  {id:56,title:"Color Identifier Device",category:"Vision",summary:"Handheld tool that speaks the color of fabrics, helping with outfit coordination.",keywords:"blind color clothing fashion identification",link:"https://www.maxiaids.com/color-identifiers"},
+  {id:57,title:"Vibrating Alarm Clock",category:"Hearing",summary:"Alarm clock that shakes the bed or pillow instead of making sound.",keywords:"deaf hearing alarm wake up sleep",link:"https://www.harriscomm.com/vibrating-alarm-clocks.html"},
+  {id:58,title:"Closed Caption Glasses",category:"Hearing",summary:"Wearable glasses that display real-time captions for movies, theater, and live events.",keywords:"deaf captions theater movies entertainment",link:"https://www.captionedglasses.com/"},
+  {id:59,title:"Personal Amplifier",category:"Hearing",summary:"Pocket-sized device that amplifies speech in one-on-one conversations.",keywords:"hard of hearing amplification conversation communication",link:"https://www.amazon.com/s?k=personal+sound+amplifier"},
+  {id:60,title:"TTY Telephone",category:"Hearing",summary:"Text telephone device allowing deaf individuals to type phone conversations.",keywords:"deaf phone communication tty relay",link:"https://www.harriscomm.com/tty-phones.html"},
+  {id:61,title:"FM Listening System",category:"Hearing",summary:"Wireless system that transmits speaker's voice directly to hearing aids or headphones.",keywords:"hearing aid classroom meeting amplification",link:"https://www.phonak.com/us/en/hearing-aids/accessories/roger.html"},
+  {id:62,title:"Incontinence Products",category:"Personal Care",summary:"Discreet protective underwear and pads for managing bladder or bowel incontinence.",keywords:"incontinence hygiene dignity protection bathroom",link:"https://www.depend.com/"},
+  {id:63,title:"Raised Toilet Seat",category:"Personal Care",summary:"Elevated seat that reduces the distance needed to sit down and stand up from the toilet.",keywords:"bathroom mobility knee pain elderly safety",link:"https://www.amazon.com/s?k=raised+toilet+seat"},
+  {id:64,title:"Grab Bars for Bathroom",category:"Personal Care",summary:"Wall-mounted bars providing stability and support in showers, tubs, and near toilets.",keywords:"bathroom safety fall prevention balance support",link:"https://www.amazon.com/s?k=grab+bars"},
+  {id:65,title:"Long-Handled Shoehorn",category:"Clothing",summary:"Extended shoehorn for putting on shoes without bending over.",keywords:"shoes dressing bending back pain mobility",link:"https://www.amazon.com/s?k=long+handled+shoehorn"},
+  {id:66,title:"Dressing Stick",category:"Clothing",summary:"Long stick with hooks to help pull on pants, skirts, and shirts.",keywords:"dressing reaching clothing independence mobility",link:"https://www.amazon.com/s?k=dressing+stick"},
+  {id:67,title:"Adaptive Bras",category:"Clothing",summary:"Front-closing or magnetic-closure bras for easier dressing.",keywords:"bra dressing women one hand arthritis",link:"https://www.amazon.com/s?k=adaptive+bra"},
+  {id:68,title:"Wheelchair Gloves",category:"Mobility",summary:"Padded gloves that protect hands while propelling manual wheelchairs.",keywords:"wheelchair hands protection mobility",link:"https://www.sportaid.com/wheelchair-gloves.html"},
+  {id:69,title:"Transfer Board",category:"Mobility",summary:"Smooth sliding board to help move between wheelchair, bed, car, or toilet.",keywords:"wheelchair transfer mobility sliding safety",link:"https://www.amazon.com/s?k=transfer+board"},
+  {id:70,title:"Mobility Scooter",category:"Mobility",summary:"Motorized scooter for individuals who can't walk long distances but don't need a full wheelchair.",keywords:"scooter mobility travel shopping outdoors",link:"https://www.pridemobility.com/scooters"},
+  {id:71,title:"Walker with Seat",category:"Mobility",summary:"Wheeled walker that includes a built-in seat for resting during walks.",keywords:"walker mobility elderly rest fatigue balance",link:"https://www.amazon.com/s?k=walker+with+seat"},
+  {id:72,title:"Cane Holder Clip",category:"Mobility",summary:"Clip that attaches cane to table or counter edge, preventing it from falling.",keywords:"cane mobility organization accessibility",link:"https://www.amazon.com/s?k=cane+holder"},
+  {id:73,title:"Stair Lift",category:"Home",summary:"Motorized chair that travels up and down stairways for multi-level home access.",keywords:"stairs mobility home modification elderly safety",link:"https://www.acorn-stairlifts.com/"},
+  {id:74,title:"Portable Ramps",category:"Home",summary:"Foldable ramps for temporary wheelchair access over steps and thresholds.",keywords:"ramp wheelchair mobility home portable",link:"https://www.amazon.com/s?k=portable+wheelchair+ramp"},
+  {id:75,title:"Automatic Door Opener",category:"Home",summary:"Motorized system that opens doors with the push of a button or motion sensor.",keywords:"door wheelchair home automation accessibility",link:"https://www.amazon.com/s?k=automatic+door+opener"},
+  {id:76,title:"Smart Light Switches",category:"Home",summary:"Voice or phone-controlled light switches for hands-free lighting control.",keywords:"lights voice control smart home automation",link:"https://www.lutron.com/caseta"},
+  {id:77,title:"Medication Management Apps",category:"Cognitive",summary:"Apps that send reminders and track medication schedules.",keywords:"medication reminders memory cognitive health",link:"https://www.medisafe.com/"},
+  {id:78,title:"Picture-Based Shopping List",category:"Cognitive",summary:"Visual grocery lists using photos instead of words for cognitive support.",keywords:"autism cognitive shopping memory visual support",link:"https://www.amazon.com/s?k=picture+shopping+cards"},
+  {id:79,title:"Simplified Remote Control",category:"Cognitive",summary:"TV remote with large buttons and limited functions to reduce confusion.",keywords:"dementia alzheimers cognitive simple tv",link:"https://www.amazon.com/s?k=big+button+remote"},
+  {id:80,title:"GPS Tracking Watch",category:"Cognitive",summary:"Wearable device with location tracking for individuals with dementia or wandering tendencies.",keywords:"dementia alzheimers safety tracking wandering",link:"https://www.alzstore.com/gps-trackers-c161.aspx"},
+  {id:81,title:"Adaptive Clothing Brands",category:"Clothing",summary:"Specialized brands like Tommy Adaptive and Zappos Adaptive offering stylish accessible fashion.",keywords:"clothing fashion adaptive style disability",link:"https://www.tommy.com/us/en/tommy-adaptive"},
+  {id:82,title:"Bed Assist Rail",category:"Mobility",summary:"Rail that tucks under mattress providing a sturdy handle for turning and getting up.",keywords:"bed mobility elderly support safety independence",link:"https://www.amazon.com/s?k=bed+assist+rail"},
+  {id:83,title:"Key Turner",category:"Home",summary:"Lever-style key holders that provide greater torque for turning stiff locks.",keywords:"arthritis keys home dexterity hands",link:"https://www.amazon.com/s?k=key+turner"},
+  {id:84,title:"Pill Cutter and Crusher",category:"Personal Care",summary:"Tools for splitting pills or crushing them for easier swallowing.",keywords:"medication swallowing pills health",link:"https://www.amazon.com/s?k=pill+cutter"},
+  {id:85,title:"Reusable Straws (Flexible)",category:"Eating",summary:"Bendable, easy-to-clean straws for drinking without lifting cups.",keywords:"drinking mobility neck swallowing hydration",link:"https://www.amazon.com/s?k=flexible+silicone+straws"},
+  {id:86,title:"Wobble Cushion",category:"Cognitive",summary:"Textured seat cushion providing sensory input and movement for focus and attention.",keywords:"adhd autism sensory seating focus fidget",link:"https://www.amazon.com/s?k=wobble+cushion"},
+  {id:87,title:"Noise Reduction Earplugs",category:"Cognitive",summary:"Reusable earplugs that reduce volume without blocking all sound.",keywords:"sensory autism noise overstimulation concerts",link:"https://www.loopearplugs.com/"},
+  {id:88,title:"Fidget Tools",category:"Cognitive",summary:"Handheld sensory tools like spinners and cubes for focus and anxiety relief.",keywords:"adhd autism anxiety focus sensory",link:"https://www.amazon.com/s?k=fidget+tools"},
+  {id:89,title:"Visual Timer",category:"Cognitive",summary:"Clock that shows time remaining as a colored disk, helping with time perception.",keywords:"autism adhd time management visual cognitive",link:"https://www.timetimer.com/"},
+  {id:90,title:"Weighted Blanket",category:"Cognitive",summary:"Heavy blanket providing deep pressure stimulation for calming and better sleep.",keywords:"autism anxiety sensory sleep calming",link:"https://www.gravid.com/"},
+  {id:91,title:"Reading Guide Strip",category:"Vision",summary:"Colored transparent strip that highlights one line of text at a time.",keywords:"dyslexia reading vision tracking focus",link:"https://www.amazon.com/s?k=reading+guide+strip"},
+  {id:92,title:"Book Holder Stand",category:"Vision",summary:"Adjustable stand that holds books open hands-free at optimal reading angle.",keywords:"reading low vision arthritis hands ergonomic",link:"https://www.amazon.com/s?k=book+holder+stand"},
+  {id:93,title:"Electronic Magnifier (CCTV)",category:"Vision",summary:"Desktop camera system that magnifies text on a screen with adjustable contrast.",keywords:"low vision reading magnification documents",link:"https://www.enhancedvision.com/"},
+  {id:94,title:"Talking Kitchen Scale",category:"Vision",summary:"Kitchen scale that announces weight measurements aloud.",keywords:"blind cooking kitchen voice audio",link:"https://www.maxiaids.com/talking-kitchen-scales"},
+  {id:95,title:"Talking Thermometer",category:"Vision",summary:"Medical thermometer that speaks temperature readings.",keywords:"blind health voice audio temperature",link:"https://www.maxiaids.com/talking-thermometers"},
+  {id:96,title:"Accessible Cooking Appliances",category:"Home",summary:"Appliances with tactile controls, voice feedback, and safety features.",keywords:"blind cooking kitchen safety adaptive",link:"https://www.nfb.org/resources/blindness-and-low-vision/home-life/cooking-blind"},
+  {id:97,title:"One-Touch Can Opener",category:"Home",summary:"Electric can opener that operates with single button press.",keywords:"kitchen arthritis one hand cooking grip",link:"https://www.amazon.com/s?k=one+touch+can+opener"},
+  {id:98,title:"Suction Cup Brush",category:"Personal Care",summary:"Denture or nail brush that suctions to sink for one-handed use.",keywords:"one hand hygiene cleaning bathroom",link:"https://www.amazon.com/s?k=suction+brush"},
+  {id:99,title:"Hair Washing Tray",category:"Personal Care",summary:"Basin that allows hair washing while lying down or seated.",keywords:"mobility bathing hygiene caregiver salon",link:"https://www.amazon.com/s?k=hair+washing+tray"},
+  {id:100,title:"Electric Toothbrush",category:"Personal Care",summary:"Motorized toothbrush requiring less manual dexterity and effort.",keywords:"arthritis dexterity dental hygiene hands",link:"https://www.amazon.com/electric-toothbrushes"},
+  {id:101,title:"Sock Slider",category:"Clothing",summary:"Device that holds sock open for easy foot insertion without bending.",keywords:"socks dressing bending mobility independence",link:"https://www.amazon.com/s?k=sock+slider"},
+  {id:102,title:"Leg Lifter Strap",category:"Mobility",summary:"Loop strap to help lift legs into bed or car when leg strength is limited.",keywords:"mobility leg weakness transfer car bed",link:"https://www.amazon.com/s?k=leg+lifter+strap"},
+  {id:103,title:"Swivel Seat Cushion",category:"Mobility",summary:"Rotating cushion that makes getting in/out of cars easier.",keywords:"car transfer mobility elderly arthritis",link:"https://www.amazon.com/s?k=swivel+seat+cushion"},
+  {id:104,title:"Orthopedic Seat Cushion",category:"Personal Care",summary:"Therapeutic cushion for pain relief and pressure distribution while sitting.",keywords:"pain wheelchair office back tailbone",link:"https://www.amazon.com/s?k=orthopedic+seat+cushion"},
+  {id:105,title:"Service Dog Programs",category:"Mobility",summary:"Organizations that train and provide service dogs for various disabilities.",keywords:"service dog assistance animal mobility blind",link:"https://www.assistancedogsinternational.org/"},
+  {id:106,title:"Wheelchair Accessible Vehicle",category:"Travel",summary:"Modified vehicles with ramps or lifts for wheelchair users.",keywords:"wheelchair car van transportation mobility",link:"https://www.braun-ability.com/"},
+  {id:107,title:"TSA Notification Card",category:"Travel",summary:"Card explaining disability needs to airport security for smoother screening.",keywords:"travel airport tsa disability communication",link:"https://www.tsa.gov/travel/passenger-support"},
+  {id:108,title:"Wheelchair Travel Bags",category:"Travel",summary:"Protective covers and bags for checking wheelchairs on flights.",keywords:"wheelchair travel airplane protection flying",link:"https://www.amazon.com/s?k=wheelchair+travel+bag"},
+  {id:109,title:"Accessible Hotel Booking",category:"Travel",summary:"Websites and apps that filter hotels by accessibility features.",keywords:"travel hotel accessible booking accommodation",link:"https://www.wheelchairtravel.org/"},
+  {id:110,title:"Beach Wheelchair",category:"Recreation",summary:"Wheelchairs with large balloon tires designed to roll on sand.",keywords:"beach sand wheelchair recreation outdoors",link:"https://www.accessrecreation.com/beach-wheelchairs.html"},
+  {id:111,title:"Adaptive Skiing Equipment",category:"Recreation",summary:"Sit-skis and outriggers enabling skiing for wheelchair users.",keywords:"skiing winter sports wheelchair recreation",link:"https://www.disabledsportsusa.org/"},
+  {id:112,title:"Handcycle",category:"Recreation",summary:"Arm-powered bicycle for exercise and recreation.",keywords:"cycling exercise wheelchair recreation fitness",link:"https://www.sportaid.com/handcycles.html"},
+  {id:113,title:"Accessible Playground Equipment",category:"Recreation",summary:"Inclusive playgrounds with wheelchair-accessible swings and ramps.",keywords:"kids playground wheelchair inclusive play",link:"https://www.gametime.com/inclusive-playgrounds"},
+  {id:114,title:"Adapted Musical Instruments",category:"Recreation",summary:"Modified instruments for playing music with physical limitations.",keywords:"music instruments adaptive arts creativity",link:"https://www.wnymusic.com/adaptive-music"},
+  {id:115,title:"Voice Banking Software",category:"Tech",summary:"Technology to record your voice before losing speech ability (ALS, etc).",keywords:"als speech communication voice technology",link:"https://www.acapela-group.com/my-own-voice/"},
+  {id:116,title:"Head Mouse",category:"Tech",summary:"Head-tracking device that controls computer cursor with head movements.",keywords:"computer mobility quadriplegia als technology",link:"https://www.ablenetinc.com/headmouse-nano"},
+  {id:117,title:"Switch Interfaces",category:"Tech",summary:"Large buttons that can control computers, tablets, and communication devices.",keywords:"switches computer communication cerebral palsy",link:"https://www.ablenetinc.com/switches"},
+  {id:118,title:"Sip-and-Puff Technology",category:"Tech",summary:"Device controlled by breathing in or out through a straw.",keywords:"quadriplegia computer wheelchair control als",link:"https://www.ablenetinc.com/sip-and-puff"},
+  {id:119,title:"Wheelchair Cushion (Pressure Relief)",category:"Mobility",summary:"Medical-grade cushions preventing pressure sores for long-term wheelchair users.",keywords:"wheelchair cushion pressure sores health",link:"https://www.permobil.com/en-us/products/seating-and-positioning"},
+  {id:120,title:"Standing Wheelchair",category:"Mobility",summary:"Power wheelchair that elevates user to standing position for health and accessibility.",keywords:"wheelchair standing mobility health bones",link:"https://www.permobil.com/f5-corpus-vs"},
+  {id:121,title:"Hospital Bed (Home)",category:"Home",summary:"Adjustable bed for easier positioning, transfers, and caregiver assistance.",keywords:"bed mobility caregiving medical home",link:"https://www.amazon.com/s?k=hospital+bed"},
+  {id:122,title:"Ceiling Lift System",category:"Home",summary:"Overhead track system for safe patient transfers throughout the home.",keywords:"transfer mobility caregiver safety ceiling",link:"https://www.arjohealthcare.com/"},
+  {id:123,title:"Bidet Toilet Seat",category:"Personal Care",summary:"Electronic toilet seat with washing and drying features for independent hygiene.",keywords:"bathroom hygiene independence toilet cleaning",link:"https://www.amazon.com/s?k=bidet+toilet+seat"},
+  {id:124,title:"Pants with Velcro Closures",category:"Clothing",summary:"Adaptive pants with side openings for easier dressing while seated.",keywords:"pants wheelchair dressing adaptive clothing",link:"https://www.silverts.com/"},
+  {id:125,title:"Back Scratcher (Extended)",category:"Personal Care",summary:"Extra-long scratcher for reaching itchy spots independently.",keywords:"reaching mobility independence itch relief",link:"https://www.amazon.com/s?k=back+scratcher"},
+  {id:126,title:"Tremor Spoon",category:"Eating",summary:"Stabilizing utensil that counteracts hand tremors electronically.",keywords:"tremors parkinsons essential tremor eating",link:"https://www.liftware.com/"},
+  {id:127,title:"Talking Glucose Meter",category:"Personal Care",summary:"Blood sugar monitor that announces readings aloud.",keywords:"diabetes blind voice audio health",link:"https://www.maxiaids.com/talking-glucose-meters"},
+  {id:128,title:"Adapted Card Holders",category:"Recreation",summary:"Playing card holders for easy one-handed card games.",keywords:"cards games one hand recreation arthritis",link:"https://www.amazon.com/s?k=card+holder+game"},
+  {id:129,title:"Audiobook Services",category:"Vision",summary:"Services like Audible, Bookshare, and BARD offering books in audio format.",keywords:"blind reading books audio entertainment",link:"https://www.audible.com/"},
+  {id:130,title:"Closed Captioning Devices",category:"Hearing",summary:"Portable devices displaying captions for TV and movies.",keywords:"deaf captions tv movies entertainment",link:"https://www.harriscomm.com/captioning-devices.html"},
+  {id:131,title:"Wheelchair Backpack",category:"Mobility",summary:"Bags designed to hang on wheelchairs for carrying belongings.",keywords:"wheelchair storage bag carrying mobility",link:"https://www.amazon.com/s?k=wheelchair+backpack"},
+  {id:132,title:"Incline Board for Swallowing",category:"Personal Care",summary:"Angled board to assist with safer swallowing during meals.",keywords:"swallowing dysphagia eating positioning",link:"https://www.performancehealth.com/"},
+  {id:133,title:"Compression Socks Helper",category:"Clothing",summary:"Device for putting on tight compression stockings independently.",keywords:"compression socks dressing circulation",link:"https://www.amazon.com/s?k=compression+sock+aid"},
+  {id:134,title:"Bed Wedge Pillow",category:"Personal Care",summary:"Angled pillow for elevation to reduce reflux, snoring, or breathing issues.",keywords:"sleep breathing reflux positioning comfort",link:"https://www.amazon.com/s?k=bed+wedge+pillow"},
+  {id:135,title:"Garden Tool Adaptations",category:"Recreation",summary:"Ergonomic and extended-handle gardening tools for limited mobility.",keywords:"gardening outdoor hobby arthritis adaptive",link:"https://www.amazon.com/s?k=adaptive+garden+tools"},
+  {id:136,title:"Accessible E-Reader",category:"Vision",summary:"E-readers with text-to-speech and adjustable font size.",keywords:"reading blind low vision books audio",link:"https://www.amazon.com/kindle"},
+  {id:137,title:"Wheelchair Accessible Desk",category:"Workplace",summary:"Desks with cut-outs and adjustable height for wheelchair users.",keywords:"desk wheelchair work office accessible",link:"https://www.upliftdesk.com/"},
+  {id:138,title:"Picture Exchange System (PECS)",category:"Cognitive",summary:"Visual communication system using picture cards for non-verbal individuals.",keywords:"autism communication non-verbal picture cards",link:"https://pecsusa.com/"},
+  {id:139,title:"Mobility Assistance Harness",category:"Mobility",summary:"Supportive harness for caregivers to assist with walking and transfers.",keywords:"caregiver transfer walking support safety",link:"https://www.amazon.com/s?k=gait+belt"},
+  {id:140,title:"Adaptive Fishing Equipment",category:"Recreation",summary:"Rod holders and casting devices for fishing with limited mobility.",keywords:"fishing recreation outdoor adaptive hobby",link:"https://www.tackledirect.com/adaptive-fishing-gear.html"},
+  {id:141,title:"Medication Dispenser (Automatic)",category:"Personal Care",summary:"Machine that dispenses correct pills at scheduled times.",keywords:"medication memory reminder pills automatic",link:"https://www.herohealth.com/"},
+  {id:142,title:"Wheelchair Tires (All-Terrain)",category:"Mobility",summary:"Rugged tires for outdoor wheelchair use on grass, gravel, and trails.",keywords:"wheelchair outdoor recreation tires mobility",link:"https://www.sportaid.com/wheelchair-tires.html"},
+  {id:143,title:"Accessible Keyboard (Large Keys)",category:"Tech",summary:"Keyboards with oversized keys for low vision or limited dexterity.",keywords:"computer vision dexterity typing keyboard",link:"https://www.amazon.com/s?k=large+key+keyboard"},
+  {id:144,title:"Shower Commode Chair",category:"Personal Care",summary:"Wheeled chair that functions as both shower seat and toilet.",keywords:"shower toilet bathroom mobility hygiene",link:"https://www.amazon.com/s?k=shower+commode+chair"},
+  {id:145,title:"Bedside Urinal",category:"Personal Care",summary:"Portable urinal for nighttime use without getting out of bed.",keywords:"bathroom mobility nighttime independence",link:"https://www.amazon.com/s?k=bedside+urinal"},
+  {id:146,title:"Accessible Voting Equipment",category:"Civic",summary:"Ballot marking devices and audio voting systems for voters with disabilities.",keywords:"voting rights civic blind motor disability",link:"https://www.eac.gov/voters/resources-for-voters-with-disabilities"},
+  {id:147,title:"Disability Rights Advocacy",category:"Civic",summary:"Organizations fighting for disability rights, accommodations, and inclusion.",keywords:"rights advocacy legal ada disability",link:"https://dredf.org/"},
+  {id:148,title:"Peer Support Groups",category:"Civic",summary:"Online and in-person communities connecting people with similar disabilities.",keywords:"support community connection mental health",link:"https://www.disabilityrightsca.org/"},
+  {id:149,title:"Accessible Voting Info",category:"Civic",summary:"Resources on accessible polling places and voting accommodations.",keywords:"voting election accessibility civic rights",link:"https://www.usa.gov/voting-laws"},
+  {id:150,title:"Employment Resources (Disability)",category:"Workplace",summary:"Job placement services and employer resources for hiring people with disabilities.",keywords:"job employment work career disability hiring",link:"https://www.dol.gov/agencies/odep"},
+  {id:151,title:"ADA Information Hotline",category:"Civic",summary:"Government hotline providing information about Americans with Disabilities Act rights.",keywords:"ada rights legal information disability",link:"https://www.ada.gov/"},
+  {id:152,title:"Financial Aid (Disability)",category:"Workplace",summary:"Grants, scholarships, and financial assistance programs for people with disabilities.",keywords:"financial money scholarship education assistance",link:"https://www.disability.gov/"},
+  {id:153,title:"Accessible Banking",category:"Workplace",summary:"Banks offering large print statements, audio services, and accessible ATMs.",keywords:"banking money finance accessible blind",link:"https://www.bankofamerica.com/accessibility/"},
+  {id:154,title:"Legal Aid for Disability",category:"Civic",summary:"Free legal services for disability discrimination and accessibility issues.",keywords:"legal rights lawyer discrimination ada",link:"https://www.lsc.gov/"},
+  {id:155,title:"Inclusive Dance Programs",category:"Recreation",summary:"Dance classes and performances adapted for dancers with disabilities.",keywords:"dance arts recreation wheelchair inclusive",link:"https://axis.org/"},
+  {id:156,title:"Disability History Museum",category:"Civic",summary:"Online museum documenting disability history, culture, and civil rights.",keywords:"history culture education disability awareness",link:"http://www.disabilitymuseum.org/"}
+];
+
+const idx=lunr(function(){this.ref('id');this.field('title');this.field('summary');this.field('category');this.field('keywords');data.forEach(function(doc){this.add(doc)},this)});
+const categories=["All",...new Set(data.map(item=>item.category))];
+const filterBar=document.getElementById('filterBar');
+const searchInput=document.getElementById('searchInput');
+const resultsContainer=document.getElementById('results');
+let activeCategory="All";
+
+categories.forEach(cat=>{if(cat==="All")return;const btn=document.createElement('button');btn.className='filter-btn';btn.textContent=cat;btn.dataset.category=cat;filterBar.appendChild(btn)});
+
+// render function: fixed missing function keyword and removed stray characters
+function render(items) {
+  resultsContainer.innerHTML = '';
+  if (!items || items.length === 0) {
+    resultsContainer.innerHTML = '<div class="no-results">No resources found matching your search. Try broader keywords!</div>';
+    return;
+  }
+  items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const linkHtml = item.link ? ('<a href="' + item.link + '" class="card-link" target="_blank" rel="noopener">Learn More →</a>') : '';
+    card.innerHTML = '<span class="tag">' + item.category + '</span><h3>' + item.title + '</h3><p>' + item.summary + '</p>' + linkHtml;
+    resultsContainer.appendChild(card);
+  });
+  document.getElementById('totalCount').textContent = `${data.length}`;
+}
+
+function update(){const query=searchInput.value.trim();let filtered=data;if(query){const results=idx.search(query);const resultIds=results.map(r=>parseInt(r.ref));filtered=data.filter(d=>resultIds.includes(d.id))}if(activeCategory!=="All"){filtered=filtered.filter(d=>d.category===activeCategory)}render(filtered)}
+searchInput.addEventListener('input',update);filterBar.addEventListener('click',(e)=>{if(e.target.classList.contains('filter-btn')){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');activeCategory=e.target.dataset.category;update()}});
+render(data);
+</script>
+</body>
+</html>
