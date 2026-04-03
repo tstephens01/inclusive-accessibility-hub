@@ -1,1 +1,158 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inclusive Accessibility Hub</title><script src="https://unpkg.com/lunr/lunr.js"></script><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Segoe UI,sans-serif;background:#f0f4f8}header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:2rem;text-align:center}h1{font-size:2rem;margin-bottom:.5rem}header p{opacity:.85;font-size:1rem}.search-wrap{max-width:700px;margin:2rem auto;padding:0 1rem}#searchInput{width:100%;padding:1rem;font-size:1.1rem;border:2px solid #4a90d9;border-radius:12px;outline:none}.filters{display:flex;gap:.5rem;max-width:700px;margin:0 auto 1rem;padding:0 1rem;flex-wrap:wrap}.filter-btn{padding:.4rem .9rem;border-radius:20px;border:2px solid #4a90d9;background:#fff;color:#2d6fc4;cursor:pointer;font-size:.85rem}.filter-btn.active{background:#4a90d9;color:#fff}#results{max-width:700px;margin:0 auto;padding:0 1rem 3rem}.card{background:#fff;border-radius:14px;padding:1.25rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.07);border-left:5px solid #4a90d9}.card h3{font-size:1.05rem;margin-bottom:.4rem;color:#1a1a2e}.tag{font-size:.75rem;padding:.2rem .6rem;border-radius:10px;background:#e8f0fe;color:#2d6fc4;display:inline-block;margin:.2rem .2rem 0 0}.card p{font-size:.9rem;color:#444;line-height:1.5;margin-top:.5rem}footer{text-align:center;padding:1.5rem;color:#888;font-size:.85rem}</style></head><body><header><h1>Inclusive Accessibility Hub</h1><p>Find adaptive equipment, clothing, tools, tips and resources for every disability and every need</p></header><div class="search-wrap"><input type="search" id="searchInput" placeholder="Search by need, task, condition, product... e.g. one hand, fatigue, shower" aria-label="Search resources"></div><div class="filters" id="filterBar"></div><div id="results"></div><footer>Inclusive Accessibility Hub - Built for every person, every need, every disability</footer><script>const data=[{id:"1",title:"Magnetic Button Shirts",category:"Clothing",summary:"Shirts that look like standard button-downs but use hidden magnets for closure. Ideal for people with limited hand strength, arthritis, or one-handed dressing needs.",keywords:["magnets","buttons","one hand","arthritis","dexterity","dressing"]},{id:"2",title:"Smart Walking Canes",category:"Mobility",summary:"Canes with ultrasonic sensors that detect chest-height obstacles and integrate with GPS for turn-by-turn voice navigation.",keywords:["blind","low vision","navigation","obstacles","cane","smart tech"]},{id:"3",title:"Adaptive Utensil Set",category:"Daily Living",summary:"Weighted or thick-handled utensils designed to stabilize hand tremors and provide a better grip for those with motor challenges.",keywords:["eating","tremors","parkinsons","grip","utensils","spoon","fork"]},{id:"4",title:"Hands-Free Shoes",category:"Clothing",summary:"Shoes with a patented heel that collapses and pops back up, allowing you to step in without using your hands or bending over.",keywords:["shoes","bending","one hand","hands free","footwear"]},{id:"5",title:"Braille Refreshable Displays",category:"Communication",summary:"Electronic devices that connect to computers or phones and raise pins to create Braille characters in real-time.",keywords:["blind","braille","reading","computer","display"]},{id:"6",title:"Bidet Toilet Attachment",category:"Daily Living",summary:"An easy-to-install bidet that helps with cleaning after toileting, significantly increasing independence for those with limited reach.",keywords:["bathroom","toilet","hygiene","wiping","independence"]},{id:"7",title:"Long-Handled Shoe Horn",category:"Clothing",summary:"Extended shoe horns that allow putting on shoes without bending over, helpful for back pain, limited mobility, or post-surgery recovery.",keywords:["shoes","bending","back pain","dressing","mobility"]},{id:"8",title:"Voice-to-Text AAC Apps",category:"Communication",summary:"Apps that convert typed text into natural-sounding speech or use symbols for communication. Essential for nonverbal individuals.",keywords:["nonverbal","speech","communication","AAC","talk","symbols"]}];let idx,activeFilter='';function init(){buildFilters();buildIndex();renderAll()}function buildFilters(){const cats=[...new Set(data.map(d=>d.category))];const bar=document.getElementById('filterBar');const all=document.createElement('button');all.className='filter-btn active';all.textContent='All';all.onclick=()=>setFilter('');bar.appendChild(all);cats.forEach(c=>{const btn=document.createElement('button');btn.className='filter-btn';btn.textContent=c;btn.onclick=()=>setFilter(c);bar.appendChild(btn)})}function setFilter(f){activeFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.textContent===(f||'All')));const q=document.getElementById('searchInput').value.trim();q?doSearch(q):renderAll()}function buildIndex(){idx=lunr(function(){this.ref('id');this.field('title',{boost:10});this.field('summary',{boost:5});this.field('keywords',{boost:8});this.field('category',{boost:4});data.forEach(d=>this.add({...d,keywords:d.keywords.join(' ')}))})}function renderAll(){const filtered=activeFilter?data.filter(d=>d.category===activeFilter):data;render(filtered,'')}function doSearch(q){try{const res=idx.search(q.split(' ').map(t=>t+'~1').join(' '));let found=res.map(r=>data.find(d=>d.id===r.ref)).filter(Boolean);if(activeFilter)found=found.filter(d=>d.category===activeFilter);render(found,q)}catch(e){render([],q)}}function render(items,q){const out=document.getElementById('results');if(!items.length){out.innerHTML='<div style="text-align:center;padding:3rem;color:#777"><h2>No results found</h2><p>Try different keywords like the task you find hard, a body part, or a product name.</p></div>';return}out.innerHTML=items.map(d=>`<div class="card"><h3>${d.title}</h3><span class="tag">${d.category}</span><p>${d.summary}</p></div>`).join('')}document.getElementById('searchInput').addEventListener('input',e=>{const q=e.target.value.trim();q.length>1?doSearch(q):renderAll()});init()</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Inclusive Accessibility Hub</title>
+  <script src="https://unpkg.com/lunr/lunr.js"></script>
+  <style>
+    :root {
+      --primary: #2d6fc4;
+      --secondary: #1a1a2e;
+      --bg: #f0f4f8;
+      --card-bg: #ffffff;
+      --text: #333;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 3rem 1rem; text-align: center; }
+    header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    header p { opacity: 0.9; font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+    .search-container { max-width: 800px; margin: -2rem auto 2rem; padding: 0 1rem; position: relative; z-index: 10; }
+    #searchInput { width: 100%; padding: 1.2rem 1.5rem; font-size: 1.2rem; border: none; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); outline: none; transition: transform 0.2s; }
+    #searchInput:focus { transform: translateY(-2px); }
+    .filters { max-width: 800px; margin: 0 auto 2rem; display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; padding: 0 1rem; }
+    .filter-btn { padding: 0.5rem 1.2rem; border: 2px solid var(--primary); background: transparent; color: var(--primary); border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+    .filter-btn.active, .filter-btn:hover { background: var(--primary); color: #fff; }
+    #results { max-width: 800px; margin: 0 auto 4rem; padding: 0 1rem; display: grid; gap: 1.5rem; }
+    .card { background: var(--card-bg); border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow); border-left: 6px solid var(--primary); animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .card h3 { color: var(--secondary); margin-bottom: 0.5rem; font-size: 1.3rem; }
+    .tag { display: inline-block; background: #e8f0fe; color: var(--primary); padding: 0.2rem 0.8rem; border-radius: 8px; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.8rem; text-transform: uppercase; }
+    .card p { font-size: 1rem; color: #555; }
+    footer { text-align: center; padding: 3rem; background: #fff; border-top: 1px solid #ddd; color: #777; font-size: 0.9rem; }
+    .no-results { text-align: center; padding: 3rem; color: #888; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Inclusive Accessibility Hub</h1>
+    <p>The ultimate resource for adaptive equipment, clothing, and tips for every person and every need.</p>
+  </header>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by need (e.g., 'one hand', 'low vision', 'showering')..." aria-label="Search resources">
+  </div>
+
+  <div class="filters" id="filterBar">
+    <button class="filter-btn active" data-category="All">All Resources</button>
+  </div>
+
+  <main id="results"></main>
+
+  <footer>
+    <p>Inclusive Accessibility Hub &copy; 2024 - Built to empower and inform.</p>
+  </footer>
+
+  <script>
+    const data = [
+      { id: 1, title: "Magnetic Button Shirts", category: "Clothing", summary: "Shirts with hidden magnets instead of buttons. Perfect for limited dexterity or one-handed dressing.", keywords: "dexterity arthritis one hand stroke" },
+      { id: 2, title: "Weighted Utensils", category: "Eating", summary: "Heavier forks and spoons that stabilize hand tremors, making eating more manageable and dignified.", keywords: "parkinsons tremors shaky hands eating" },
+      { id: 3, title: "Voice-to-Text Software", category: "Tech", summary: "Advanced software allowing full computer control and typing through voice commands.", keywords: "typing mobility software computer dictation" },
+      { id: 4, title: "Long-Handled Grabber", category: "Mobility", summary: "Reaching tool for picking up items from the floor or high shelves without bending or stretching.", keywords: "reach bending pickup independent living" },
+      { id: 5, title: "Screen Readers (NVDA/JAWS)", category: "Vision", summary: "Software that reads aloud on-screen text for users who are blind or have low vision.", keywords: "blind vision computer accessibility software" },
+      { id: 6, title: "Adaptive Cutlery with Straps", category: "Eating", summary: "Utensils with adjustable straps that secure to the hand, helping those with weak grip.", keywords: "grip weakness paralysis eating help" },
+      { id: 7, title: "Sock Aid Tool", category: "Clothing", summary: "Simple device that helps pull on socks without needing to reach down to the feet.", keywords: "bending socks dressing mobility back pain" },
+      { id: 8, title: "Visual Doorbell Alert", category: "Hearing", summary: "Flashing light system that signals when someone is at the door or if a phone is ringing.", keywords: "deaf hearing doorbell alert signal" },
+      { id: 9, title: "Smart Pill Organizer", category: "Personal Care", summary: "Electronic pill box that flashes and alarms when it is time to take specific medications.", keywords: "meds memory cognitive reminders health" },
+      { id: 10, title: "Ergonomic Vertical Mouse", category: "Tech", summary: "Mouse designed to keep the wrist in a neutral position, reducing strain and pain.", keywords: "carpal tunnel wrist pain computer office" },
+      { id: 11, title: "Wheelchair Lap Tray", category: "Mobility", summary: "Stable surface that attaches to wheelchairs for eating, working, or using a tablet.", keywords: "wheelchair desk eating support" },
+      { id: 12, title: "Braille Labeler", category: "Vision", summary: "Handheld device for creating embossed braille labels for household items, files, and more.", keywords: "blind organization vision household" },
+      { id: 13, title: "Text-to-Speech Scanning Pen", category: "Cognitive", summary: "Portable pen that scans printed text and reads it aloud instantly. Great for dyslexia.", keywords: "reading dyslexia learning cognitive school" },
+      { id: 14, title: "Adjustable Shower Chair", category: "Personal Care", summary: "Stable, non-slip seat for the shower to prevent falls and reduce fatigue while bathing.", keywords: "shower bath safety fall prevention fatigue" },
+      { id: 15, title: "Elastic No-Tie Laces", category: "Clothing", summary: "Turn any lace-up shoe into a slip-on. Ideal for those who cannot tie traditional bows.", keywords: "shoes one hand arthritis kids elderly" },
+      { id: 16, title: "Adaptive Gaming Controller", category: "Tech", summary: "Customizable controllers like the Xbox Adaptive Controller designed for limited mobility.", keywords: "gaming xbox playstation mobility motor skills" },
+      { id: 17, title: "Large Print Calendar", category: "Vision", summary: "High-contrast, large-font calendars for easier reading and schedule management.", keywords: "vision low vision low vision organization" },
+      { id: 18, title: "Noise Cancelling Headphones", category: "Cognitive", summary: "Reduces sensory overload by blocking out background noise in loud environments.", keywords: "autism sensory processing cognitive focus" },
+      { id: 19, title: "Universal Cuff Utensil Holder", category: "Eating", summary: "A strap that holds various tools (pens, toothbrushes, forks) for users with no grip.", keywords: "paralysis quadriplegia eating writing" },
+      { id: 20, title: "Bed Rail Assist Bar", category: "Mobility", summary: "Sturdy handle that provides support when getting in and out of bed or repositioning.", keywords: "bed safety mobility elderly injury" }
+    ];
+
+    const idx = lunr(function () {
+      this.ref('id');
+      this.field('title');
+      this.field('summary');
+      this.field('category');
+      this.field('keywords');
+
+      data.forEach(function (doc) {
+        this.add(doc);
+      }, this);
+    });
+
+    const categories = ["All", ...new Set(data.map(item => item.category))];
+    const filterBar = document.getElementById('filterBar');
+    const searchInput = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('results');
+    let activeCategory = "All";
+
+    categories.forEach(cat => {
+      if (cat === "All") return;
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      btn.textContent = cat;
+      btn.dataset.category = cat;
+      filterBar.appendChild(btn);
+    });
+
+    function render(items) {
+      resultsContainer.innerHTML = '';
+      if (items.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-results">No resources found. Try a different search term.</div>';
+        return;
+      }
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <span class="tag">${item.category}</span>
+          <h3>${item.title}</h3>
+          <p>${item.summary}</p>
+        `;
+        resultsContainer.appendChild(card);
+      });
+    }
+
+    function update() {
+      const query = searchInput.value.trim();
+      let filtered = data;
+
+      if (query) {
+        const results = idx.search(query);
+        const resultIds = results.map(r => parseInt(r.ref));
+        filtered = data.filter(d => resultIds.includes(d.id));
+      }
+
+      if (activeCategory !== "All") {
+        filtered = filtered.filter(d => d.category === activeCategory);
+      }
+
+      render(filtered);
+    }
+
+    searchInput.addEventListener('input', update);
+
+    filterBar.addEventListener('click', (e) => {
+      if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        activeCategory = e.target.dataset.category;
+        update();
+      }
+    });
+
+    render(data);
+  </script>
+</body>
+</html>
