@@ -13,36 +13,49 @@
       --card-bg: #ffffff;
       --text: #333;
       --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --accent: #ff6b6b;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-    header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 3rem 1rem; text-align: center; }
-    header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    header p { opacity: 0.9; font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
-    .search-container { max-width: 800px; margin: -2rem auto 2rem; padding: 0 1rem; position: relative; z-index: 10; }
-    #searchInput { width: 100%; padding: 1.2rem 1.5rem; font-size: 1.2rem; border: none; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); outline: none; transition: transform 0.2s; }
-    #searchInput:focus { transform: translateY(-2px); }
-    .filters { max-width: 800px; margin: 0 auto 2rem; display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; padding: 0 1rem; }
-    .filter-btn { padding: 0.5rem 1.2rem; border: 2px solid var(--primary); background: transparent; color: var(--primary); border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
-    .filter-btn.active, .filter-btn:hover { background: var(--primary); color: #fff; }
-    #results { max-width: 800px; margin: 0 auto 4rem; padding: 0 1rem; display: grid; gap: 1.5rem; }
-    .card { background: var(--card-bg); border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow); border-left: 6px solid var(--primary); animation: fadeIn 0.4s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .card h3 { color: var(--secondary); margin-bottom: 0.5rem; font-size: 1.3rem; }
-    .tag { display: inline-block; background: #e8f0fe; color: var(--primary); padding: 0.2rem 0.8rem; border-radius: 8px; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.8rem; text-transform: uppercase; }
-    .card p { font-size: 1rem; color: #555; }
-    footer { text-align: center; padding: 3rem; background: #fff; border-top: 1px solid #ddd; color: #777; font-size: 0.9rem; }
-    .no-results { text-align: center; padding: 3rem; color: #888; }
+    header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 4rem 1rem; text-align: center; }
+    header h1 { font-size: 2.8rem; margin-bottom: 0.8rem; letter-spacing: -0.5px; }
+    header p { opacity: 0.9; font-size: 1.2rem; max-width: 700px; margin: 0 auto; }
+    
+    .search-section { max-width: 900px; margin: -2.5rem auto 3rem; padding: 0 1rem; position: relative; z-index: 10; }
+    #searchInput { width: 100%; padding: 1.4rem 1.8rem; font-size: 1.3rem; border: none; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.12); outline: none; transition: all 0.3s ease; }
+    #searchInput:focus { transform: translateY(-3px); box-shadow: 0 20px 45px rgba(0,0,0,0.15); }
+    
+    .filters { max-width: 900px; margin: 0 auto 2.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; padding: 0 1rem; }
+    .filter-btn { padding: 0.6rem 1.4rem; border: 2px solid var(--primary); background: #fff; color: var(--primary); border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
+    .filter-btn.active, .filter-btn:hover { background: var(--primary); color: #fff; transform: scale(1.05); }
+    
+    #results { max-width: 900px; margin: 0 auto 5rem; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .card { background: var(--card-bg); border-radius: 20px; padding: 1.8rem; box-shadow: var(--shadow); border-top: 5px solid var(--primary); display: flex; flex-direction: column; animation: fadeIn 0.4s ease-out; transition: transform 0.2s; }
+    .card:hover { transform: translateY(-5px); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .tag { display: inline-block; background: #e8f0fe; color: var(--primary); padding: 0.3rem 1rem; border-radius: 12px; font-size: 0.75rem; font-weight: 800; margin-bottom: 1rem; text-transform: uppercase; align-self: flex-start; }
+    .card h3 { color: var(--secondary); margin-bottom: 0.8rem; font-size: 1.25rem; line-height: 1.3; }
+    .card p { font-size: 0.95rem; color: #555; flex-grow: 1; }
+    
+    .contribute-box { max-width: 900px; margin: 4rem auto; padding: 2.5rem; background: #fff; border-radius: 24px; text-align: center; box-shadow: var(--shadow); }
+    .contribute-box h2 { margin-bottom: 1rem; color: var(--secondary); }
+    .btn-suggest { display: inline-block; padding: 1rem 2.5rem; background: var(--accent); color: #fff; text-decoration: none; border-radius: 15px; font-weight: 700; font-size: 1.1rem; margin-top: 1rem; transition: all 0.2s; }
+    .btn-suggest:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+    footer { text-align: center; padding: 4rem 1rem; background: var(--secondary); color: #rgba(255,255,255,0.6); font-size: 0.95rem; }
+    footer p { color: #fff; opacity: 0.7; }
+    .no-results { text-align: center; padding: 4rem; color: #888; grid-column: 1 / -1; font-size: 1.2rem; }
   </style>
 </head>
 <body>
   <header>
     <h1>Inclusive Accessibility Hub</h1>
-    <p>The ultimate resource for adaptive equipment, clothing, and tips for every person and every need.</p>
+    <p>A comprehensive living library of adaptive equipment, life-hacks, and tools designed to empower people with disabilities and their caregivers.</p>
   </header>
 
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search by need (e.g., 'one hand', 'low vision', 'showering')..." aria-label="Search resources">
+  <div class="search-section">
+    <input type="text" id="searchInput" placeholder="Search by condition, task, or need (e.g. 'one hand', 'shower', 'low vision')..." aria-label="Search resources">
   </div>
 
   <div class="filters" id="filterBar">
@@ -51,12 +64,19 @@
 
   <main id="results"></main>
 
+  <div class="contribute-box">
+    <h2>Help us Grow</h2>
+    <p>Know a great tool or tip we missed? Our goal is to be the most comprehensive resource on the web.</p>
+    <a href="https://github.com/tstephens01/inclusive-accessibility-hub/issues" class="btn-suggest">Suggest a Resource</a>
+  </div>
+
   <footer>
-    <p>Inclusive Accessibility Hub &copy; 2024 - Built to empower and inform.</p>
+    <p>Inclusive Accessibility Hub &copy; 2026 - Built with empathy for independence.</p>
   </footer>
 
   <script>
     const data = [
+      // Original 20 items (summarized for efficiency)
       { id: 1, title: "Magnetic Button Shirts", category: "Clothing", summary: "Shirts with hidden magnets instead of buttons. Perfect for limited dexterity or one-handed dressing.", keywords: "dexterity arthritis one hand stroke" },
       { id: 2, title: "Weighted Utensils", category: "Eating", summary: "Heavier forks and spoons that stabilize hand tremors, making eating more manageable and dignified.", keywords: "parkinsons tremors shaky hands eating" },
       { id: 3, title: "Voice-to-Text Software", category: "Tech", summary: "Advanced software allowing full computer control and typing through voice commands.", keywords: "typing mobility software computer dictation" },
@@ -73,10 +93,32 @@
       { id: 14, title: "Adjustable Shower Chair", category: "Personal Care", summary: "Stable, non-slip seat for the shower to prevent falls and reduce fatigue while bathing.", keywords: "shower bath safety fall prevention fatigue" },
       { id: 15, title: "Elastic No-Tie Laces", category: "Clothing", summary: "Turn any lace-up shoe into a slip-on. Ideal for those who cannot tie traditional bows.", keywords: "shoes one hand arthritis kids elderly" },
       { id: 16, title: "Adaptive Gaming Controller", category: "Tech", summary: "Customizable controllers like the Xbox Adaptive Controller designed for limited mobility.", keywords: "gaming xbox playstation mobility motor skills" },
-      { id: 17, title: "Large Print Calendar", category: "Vision", summary: "High-contrast, large-font calendars for easier reading and schedule management.", keywords: "vision low vision low vision organization" },
+      { id: 17, title: "Large Print Calendar", category: "Vision", summary: "High-contrast, large-font calendars for easier reading and schedule management.", keywords: "vision low vision organization" },
       { id: 18, title: "Noise Cancelling Headphones", category: "Cognitive", summary: "Reduces sensory overload by blocking out background noise in loud environments.", keywords: "autism sensory processing cognitive focus" },
       { id: 19, title: "Universal Cuff Utensil Holder", category: "Eating", summary: "A strap that holds various tools (pens, toothbrushes, forks) for users with no grip.", keywords: "paralysis quadriplegia eating writing" },
-      { id: 20, title: "Bed Rail Assist Bar", category: "Mobility", summary: "Sturdy handle that provides support when getting in and out of bed or repositioning.", keywords: "bed safety mobility elderly injury" }
+      { id: 20, title: "Bed Rail Assist Bar", category: "Mobility", summary: "Sturdy handle that provides support when getting in and out of bed or repositioning.", keywords: "bed safety mobility elderly injury" },
+      
+      // NEW EXPANDED ITEMS
+      { id: 21, title: "Threshold Ramps", category: "Home", summary: "Small, durable ramps that eliminate tripping hazards at doorways for wheelchairs and walkers.", keywords: "ramp entrance doorway wheelchair walker home modification" },
+      { id: 22, title: "Anti-Scald Water Valve", category: "Home", summary: "Device that automatically shuts off or regulates water temperature to prevent burns in showers/sinks.", keywords: "shower bath safety burns safety home" },
+      { id: 23, title: "Side-Opening Crib (PediaLift)", category: "Parenting", summary: "Specialized cribs with doors that open to the side, allowing wheelchair users to safely reach their baby.", keywords: "baby parenting wheelchair crib nursery" },
+      { id: 24, title: "Live Transcribe App", category: "Hearing", summary: "Google app that provides real-time, high-accuracy speech-to-text captions on your phone.", keywords: "deaf hearing captions speech to text phone" },
+      { id: 25, title: "National Parks Access Pass", category: "Travel", summary: "Free lifetime pass to all US National Parks for citizens with permanent disabilities.", keywords: "travel nature parks discount recreation" },
+      { id: 26, title: "Automatic Jar Opener", category: "Home", summary: "Battery-operated device that twists off stubborn lids at the touch of a button.", keywords: "kitchen grip arthritis hands cooking" },
+      { id: 27, title: "One-Handed Keyboard", category: "Workplace", summary: "Keyboards with optimized layouts for full speed typing using only the left or right hand.", keywords: "typing stroke one hand office computer" },
+      { id: 28, title: "Tiimo (Visual Schedule App)", category: "Cognitive", summary: "App that uses visual icons and timers to help users with ADHD or Autism manage their daily routines.", keywords: "adhd autism routine memory focus cognitive" },
+      { id: 29, title: "Adaptive Scuba (Diveheart)", category: "Recreation", summary: "Programs and equipment that make scuba diving accessible to people with physical and cognitive disabilities.", keywords: "sports hobby diving water paralysis blind" },
+      { id: 30, title: "Sensory-Friendly Cinema", category: "Recreation", summary: "Movie screenings with lights up, sound down, and a 'talk and move' policy for sensory needs.", keywords: "autism sensory movies kids entertainment" },
+      { id: 31, title: "Lever car door opener", category: "Travel", summary: "Portable handle that hooks into car door latches to provide extra leverage for getting in and out.", keywords: "car vehicle mobility elderly strength" },
+      { id: 32, title: "AAC Communication Apps", category: "Cognitive", summary: "Apps like Proloquo2Go that use symbols and text-to-speech to help non-verbal users communicate.", keywords: "speech non-verbal communication autism stroke" },
+      { id: 33, title: "Pull-Down Shelf Inserts", category: "Home", summary: "Kitchen cabinet inserts that pull down to counter height, perfect for wheelchair users.", keywords: "kitchen reach wheelchair home modification" },
+      { id: 34, title: "Accessible Route Navigation", category: "Travel", summary: "Google Maps feature that specifically highlights 'wheelchair accessible' public transit routes and paths.", keywords: "navigation travel city wheelchair walking" },
+      { id: 35, title: "Amtrak Disability Discount", category: "Travel", summary: "10% fare discount and dedicated assistance for passengers with permanent disabilities.", keywords: "train travel discount assistance help" },
+      { id: 36, title: "Wheelchair Tablet Mount", category: "Workplace", summary: "Flexible, sturdy arms that securely hold tablets or phones on a wheelchair frame.", keywords: "tech wheelchair phone mount office" },
+      { id: 37, title: "Long-Handled Bath Sponge", category: "Personal Care", summary: "Curved sponge handle that allows for washing back and feet without excessive bending.", keywords: "shower hygiene reaching mobility" },
+      { id: 38, title: "Smart Induction Cooktop", category: "Home", summary: "Cooktops that stay cool to the touch and offer automatic shut-off for enhanced kitchen safety.", keywords: "cooking fire safety home blind dexterity" },
+      { id: 39, title: "Firm Nursing Pillow", category: "Parenting", summary: "Supportive pillows like 'My Breast Friend' that secure around the waist to assist with infant feeding.", keywords: "baby parenting support mobility nursing" },
+      { id: 40, title: "Roll-Under Desk", category: "Workplace", summary: "Height-adjustable or open-frame desks designed specifically for wheelchair clearance.", keywords: "office wheelchair desk work furniture" }
     ];
 
     const idx = lunr(function () {
@@ -109,7 +151,7 @@
     function render(items) {
       resultsContainer.innerHTML = '';
       if (items.length === 0) {
-        resultsContainer.innerHTML = '<div class="no-results">No resources found. Try a different search term.</div>';
+        resultsContainer.innerHTML = '<div class="no-results">No resources found matching your search. Try broader keywords!</div>';
         return;
       }
       items.forEach(item => {
@@ -142,7 +184,6 @@
     }
 
     searchInput.addEventListener('input', update);
-
     filterBar.addEventListener('click', (e) => {
       if (e.target.classList.contains('filter-btn')) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
